@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>M87* · Blackhole</title>
+<style>
+  * { box-sizing: border-box }
+  :root { color-scheme: dark; font: 14px/1.4 Inter, system-ui, sans-serif }
+  body { margin: 0; background: black; color: #f3f0ec }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block }
+  #controls { position: fixed; bottom: max(20px,env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; width: max-content; max-width: calc(100% - 16px); padding: 5px 8px; border: 1px solid #39332e; border-radius: 12px; background: #141312f2; transition: opacity .25s }
+  #controls[hidden], button[hidden] { display: none }
+  :fullscreen body.quiet { cursor: none }
+  :fullscreen .quiet #controls:not(:has(:focus-visible)):not(:hover) { opacity: 0; pointer-events: none }
+  button, select, .github-link { background: transparent; color: inherit; border: 0; border-radius: 6px; cursor: pointer; font: inherit; min-height: 38px; padding: 4px 8px }
+  button, .github-link { display: inline-flex; justify-content: center; align-items: center; gap: 5px }
+  button:hover, select:hover, .github-link:hover { background: #312c27 }
+  button:focus-visible, select:focus-visible, .github-link:focus-visible { outline: 2px solid #f7b877; outline-offset: 1px }
+  svg { width: 16px; height: 16px; fill: currentColor }
+  .github-link { min-width: 34px; color: #cec8c2 }
+  #play { min-width: 74px }
+  #speed { color: #e9bd90 }
+  #time { color: #cec8c2; min-width: 55px; text-align: right; padding: 0 4px; font: 12px/1.2 ui-monospace, monospace; font-variant-numeric: tabular-nums; white-space: nowrap }
+  #notice { position: fixed; inset: 44% 12px auto; text-align: center }
+  a { color: #ffc789 }
+  #population { display: flex; gap: 2px; align-items: center; padding-left: 5px; color: #cec8c2; font-size: 12px }
+  #population select { font-variant-numeric: tabular-nums; color: #f3f0ec }
+  @media (max-width: 590px) {
+    #controls { width: max-content; flex-wrap: wrap; justify-content: center }
+    #population { padding-left: 0 }
+  }
+  @media (max-width: 520px) {
+    #controls { gap: 2px; padding: 4px }
+    button, select { padding-inline: 4px; font-size: 13px }
+    #play { min-width: 59px }
+    #time { min-width: 42px; font-size: 11px; padding: 0 2px }
+    svg { width: 14px; height: 14px }
+  }
+  @media (max-width: 390px) {
+    #play { min-width: 29px }
+    #play-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%) }
+    #reset svg { display: none }
+    #speed, #framing { padding-inline: 0 }
+  }
+  @media (prefers-reduced-motion: reduce) { #controls { transition: none } }
+</style>
+</head>
+<body>
+<canvas id="sky" aria-label="Particle simulation of the black hole's glowing accretion ring"></canvas>
+<div id="notice" role="status">Preparing particles…</div>
+<div id="controls" role="group" aria-label="Simulation controls" hidden>
+  <button id="play" type="button"><svg aria-hidden="true" viewBox="0 0 24 24"><path id="play-icon"/></svg><span id="play-label">Play</span></button>
+  <button id="reset" type="button" title="Reset simulation"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8.5A8 8 0 1 1 4 15h2.1A6 6 0 1 0 7 9h4v2H3V3h2z"/></svg>Reset</button>
+  <select id="speed" aria-label="Simulation speed" title="Simulation speed">
+    <option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option>
+  </select>
+  <label id="population">Particles <select id="particles" title="Particle count"></select></label>
+  <select id="framing" aria-label="Field of view" title="Field of view"><option value="420">Close view</option><option value="770">Source view</option></select>
+  <output id="time" role="timer" aria-label="Simulation time" aria-live="off">0.00 s</output>
+  <button id="fullscreen" type="button" aria-label="Enter fullscreen" title="Enter fullscreen"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3h7v2H5v5H3zm11 0h7v7h-2V5h-5zM3 14h2v5h5v2H3zm16 0h2v7h-7v-2h5z"/></svg></button>
+  <a class="github-link" href="https://github.com/nixolas1/blackhole" target="_blank" rel="noopener noreferrer" aria-label="View source on GitHub" title="View source on GitHub"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg></a>
+</div>
+<script src="data/accretion.js"></script>
+<script src="data/disk.js"></script>
+<script src="data/turbulence.js"></script>
+<script src="turbulence.js"></script>
+<script src="magnetic-field.js"></script>
+<script src="particles.js"></script>
+<script src="player.js"></script>
+</body>
+</html>
