@@ -2,7 +2,7 @@
 
 An interactive WebGL 2 simulation of the glowing gas around M87*. For local use, clone the repository and open **index.html** in Chrome. [Launch the live simulator](https://blackhole-eta-two.vercel.app)
 
-Play or pause with Space. Reset returns the particles and magnetic field to their initial state while preserving playback, speed and framing. Speed ranges from 0.25× to 4×. **Particles** selects 125,000, 250,000 or 500,000 live parcels. The default is 125,000. Changing this setting splits parcels or samples mass-weighted representatives of the existing flow, preserving total mass and simulation time. The browser remembers the selected count when local storage is available. The simulation continues until paused or closed. The clock measures simulation seconds at the pace of the supplied clip.
+Play or pause with Space. Reset returns the particles and magnetic field to their initial state while preserving playback, speed and framing. Available speeds are 0.25×, 0.5×, 1×, 1.5× and 2×. **Particles** selects 125,000, 250,000 or 500,000 live parcels. The default is 125,000. Changing this setting splits parcels or samples mass-weighted representatives of the existing flow, preserving total mass and simulation time. The browser remembers the selected count when local storage is available. The simulation continues until paused or closed. The clock measures simulation seconds at the pace of the supplied clip.
 
 [24-second preview at 2160 × 2160 and 60 fps](renders/black-hole-2160p60.mp4) · [Opening comparison](renders/comparison.png) · [Live simulator screenshot](renders/simulator.png)
 
